@@ -1,0 +1,80 @@
+{
+  "analysis": "CLEF-TAR 2019 DTA evaluation restricted to available abstracts",
+  "input_file": "data/jev_dta_scores.csv",
+  "input_sha256": "04232aacc47b2d4b52545721d77f0f8644ef210c85649bde72f405b04f8991c2",
+  "input_rows": 30521,
+  "excluded_missing_abstract_rows": 3689,
+  "included_rows": 26832,
+  "included_positives": 423,
+  "review_ids": [
+    "CD008874",
+    "CD009044",
+    "CD011686",
+    "CD012080",
+    "CD012233",
+    "CD012567",
+    "CD012669",
+    "CD012768"
+  ],
+  "jev_calls_made": 0,
+  "abstract_filter": "abstract_available == true; derived from non-null, non-empty trimmed PubMed abstract in scoring metadata",
+  "ranking": "descending jev_probability; ties by ascending numeric PMID and then PMID text",
+  "WSS@95": "1 - k95/N - 0.05; k95 is first rank reaching ceil(0.95 * positive_count)",
+  "WSS@100": "1 - rank_of_last_relevant/N",
+  "aggregate": "unweighted arithmetic mean across eight review-level metrics",
+  "fixed_probability_threshold": 0.5,
+  "aggregate_metrics": {
+    "WSS@95": {
+      "mean": 0.6479776529047265,
+      "sample_sd": 0.24331905032701273,
+      "median": 0.7570553043523516,
+      "min": 0.27325581395348836,
+      "max": 0.9319205185058843
+    },
+    "WSS@100": {
+      "mean": 0.5920231122132603,
+      "sample_sd": 0.2671888942117059,
+      "median": 0.5849353220630307,
+      "min": 0.26890756302521013,
+      "max": 0.9819205185058844
+    },
+    "MAP": {
+      "mean": 0.45886849460225937,
+      "sample_sd": 0.14315706708653755,
+      "median": 0.4781571281275334,
+      "min": 0.21509645422368082,
+      "max": 0.6292397069137429
+    },
+    "Recall@5%": {
+      "mean": 0.5610202808468263,
+      "sample_sd": 0.32142136773823127,
+      "median": 0.5519105984138428,
+      "min": 0.046511627906976744,
+      "max": 1.0
+    },
+    "Recall@10%": {
+      "mean": 0.7304575460923444,
+      "sample_sd": 0.2721089626728086,
+      "median": 0.8248618120644076,
+      "min": 0.16279069767441862,
+      "max": 1.0
+    },
+    "Recall@20%": {
+      "mean": 0.8481266582352665,
+      "sample_sd": 0.22803475124227707,
+      "median": 0.9542606516290726,
+      "min": 0.3488372093023256,
+      "max": 1.0
+    },
+    "Recall@50%": {
+      "mean": 0.9508135649200521,
+      "sample_sd": 0.08816195319633677,
+      "median": 0.9920634920634921,
+      "min": 0.7441860465116279,
+      "max": 1.0
+    }
+  },
+  "python_version": "3.14.3",
+  "pandas_version": "3.0.6",
+  "matplotlib_version": "3.11.2"
+}

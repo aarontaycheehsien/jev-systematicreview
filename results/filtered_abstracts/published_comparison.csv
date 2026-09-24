@@ -1,0 +1,4 @@
+system,setting,mean_dta_wss95,mean_dta_wss100,source
+"Jev, filtered non-missing abstracts",saved zero-shot single-model scores; abstract-available subset,0.6479776529047265,0.5920231122132603,This repository; exact row-level scores in data/jev_dta_scores.csv
+Akinseloyin et al. (2024),Claude 3 criteria QA plus Gemini text-embedding-004 reranking,0.653,0.573,https://academic.oup.com/jamia/article/31/9/1939/7718667
+"Akinseloyin et al. (2026), Soft-Vote",zero-shot multi-LLM,0.68,0.667,https://academic.oup.com/biomethods/article/11/1/bpag006/8460762

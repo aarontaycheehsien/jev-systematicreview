@@ -1,0 +1,11 @@
+record_id,label_included,jev_probability,jev_model,abstract_available,input_tokens,output_tokens,latency_seconds
+https://openalex.org/w2784786061,0,0.98,jev-1.13.0,True,2937,20,0.2969551999121904
+https://openalex.org/w4232442131,0,0.98,jev-1.13.0,True,1108,20,0.2753986000316217
+https://openalex.org/w2983834993,0,0.95,jev-1.13.0,True,1724,20,0.2730163000524044
+https://openalex.org/w2946472167,0,0.94,jev-1.13.0,True,1008,20,0.3119488999946043
+https://openalex.org/w2518847837,0,0.94,jev-1.13.0,True,2084,20,0.3610288000199944
+https://openalex.org/w2267087160,0,0.93,jev-1.13.0,True,1757,20,0.313739699893631
+https://openalex.org/w4238923891,0,0.93,jev-1.13.0,True,940,20,0.3008888999465853
+https://openalex.org/w2556263512,0,0.92,jev-1.13.0,True,846,20,0.2972636999329552
+https://openalex.org/w2911337489,0,0.92,jev-1.13.0,True,1535,20,0.2905152000021189
+https://openalex.org/w2407173619,0,0.91,jev-1.13.0,True,871,20,0.2729029000038281

@@ -1,0 +1,36 @@
+{
+  "input_file": "data/jev_donners2021_scores.csv",
+  "input_sha256": "1d8637214ea298c72456fbce602e1777e4a8f68934b2b635071b5e26729cf30a",
+  "records": 258,
+  "included": 15,
+  "excluded": 243,
+  "missing_abstracts": 8,
+  "api_errors": 0,
+  "jev_calls_made": 0,
+  "model": "jev-1.13.0",
+  "oracle_metrics": {
+    "threshold": 0.33,
+    "included_retained": 15,
+    "included_missed": 0,
+    "records_retained": 134,
+    "excluded": 124,
+    "workload_reduction_pct": 48.06201550387597
+  },
+  "fixed_threshold_0.50": {
+    "threshold": 0.5,
+    "true_positives": 12.0,
+    "false_negatives": 3.0,
+    "true_negatives": 179.0,
+    "false_positives": 64.0,
+    "recall": 0.8,
+    "specificity": 0.7366255144032922,
+    "precision": 0.15789473684210525,
+    "retained_for_human_screening": 76.0,
+    "automatically_excluded": 182.0,
+    "workload_reduction_pct": 70.54263565891473
+  },
+  "input_output_tokens": [
+    266273,
+    5160
+  ]
+}

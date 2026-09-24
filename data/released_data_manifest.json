@@ -1,0 +1,38 @@
+{
+  "generated_from_saved_project_scores": true,
+  "article_titles_and_abstracts_included": false,
+  "files": {
+    "data/jev_dta_scores.csv": {
+      "sha256": "04232aacc47b2d4b52545721d77f0f8644ef210c85649bde72f405b04f8991c2",
+      "rows": 30521,
+      "columns": [
+        "review_id",
+        "pmid",
+        "label_included",
+        "jev_probability",
+        "jev_model",
+        "abstract_available",
+        "input_tokens",
+        "output_tokens",
+        "latency_seconds"
+      ]
+    },
+    "data/jev_donners2021_scores.csv": {
+      "sha256": "1d8637214ea298c72456fbce602e1777e4a8f68934b2b635071b5e26729cf30a",
+      "rows": 258,
+      "columns": [
+        "record_id",
+        "label_included",
+        "jev_probability",
+        "jev_model",
+        "abstract_available",
+        "input_tokens",
+        "output_tokens",
+        "latency_seconds"
+      ],
+      "positive_labels": 15,
+      "abstract_available_records": 250,
+      "abstract_text_included": false
+    }
+  }
+}

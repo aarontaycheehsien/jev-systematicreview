@@ -1,0 +1,44 @@
+{
+  "clef_tar_repository": "https://github.com/CLEF-TAR/tar",
+  "clef_tar_commit": "dbc13d02bb3e2f8ebc90e62ff47f5eb591e5ca20",
+  "qrels_path": "2019-TAR/Task2/Testing/DTA/qrels/full.test.dta.abs.2019.qrels",
+  "criteria_repository": "https://github.com/XITASO/lgar",
+  "criteria_commit": "49e94170dd0ff9380d8dfefecf8eec4692e8f05d",
+  "criteria_path": "implementation/data/tar2019/dta/info.json",
+  "pmid_metadata_source": "NCBI PubMed E-utilities efetch.fcgi",
+  "released_score_file": {
+    "path": "data/jev_dta_scores.csv",
+    "sha256": "04232aacc47b2d4b52545721d77f0f8644ef210c85649bde72f405b04f8991c2",
+    "review_record_pairs": 30521,
+    "distinct_pmids": 30497,
+    "positive_labels": 440,
+    "abstract_available_pairs": 26832,
+    "missing_abstract_pairs": 3689,
+    "abstract_text_included": false,
+    "returned_models": [
+      "jev-1.13.0"
+    ],
+    "successful_scores": 30521,
+    "api_errors": 0,
+    "input_tokens": 33373017,
+    "output_tokens": 610420,
+    "summed_call_latency_seconds": 10138.945437204675,
+    "approximate_cost_usd": 1.4017,
+    "cost_rate_usd_per_million_input_tokens": 0.042,
+    "cost_rate_checked": "2026-09-21"
+  },
+  "local_source_file_checksums": {
+    "qrels_sha256": "dd0046f380536e9d46ce85a561ca492e67c2d5d21a47c303a0083afe8b4f300e",
+    "topic_sha256": {
+      "CD008874": "c1a1fd0a90714319e4578b9b58b7b9180e9dee7d6ea1d4a1102d88cb4e5915a1",
+      "CD009044": "401269cb631a6446aea96bb6c16cdc9e8deeec64b8fec59e464cceb6adde19b0",
+      "CD011686": "11901e409b4883e72ca6aa6a356b261a1a3b19e38e3f51565b41b67383e3c561",
+      "CD012080": "6f7e0aaa4e2bce6c5d64d8c085d9b32421596ec35eebadc99770325eb777fa1c",
+      "CD012233": "dc8c899b07920c3d29519d58b75f2748493f5d2022baa49f554d8c676b238ece",
+      "CD012567": "4fabec3f7dd61c1b592d0a01dc871eedd2d2b9a6b96b633617ba4e687a82703e",
+      "CD012669": "5002a14adf2b16598f2ab8b767e69b2ab03480a9a2f074a9eb111e5c6a4c9d30",
+      "CD012768": "6db2c212bde5fff3164643f275d8c3c100e99723bcfd3f1c6bd4949668f5169a"
+    },
+    "criteria_info_sha256": "d10c26989eec45aeefee9cc7b55c4356eb3df3975f0e7a9ee4908cba1bf05cfb"
+  }
+}
