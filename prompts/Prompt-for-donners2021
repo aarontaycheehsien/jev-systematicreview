@@ -1,0 +1,598 @@
+## Goal
+
+Build a small, reproducible exploratory experiment answering:
+
+**Can Jev reduce title/abstract screening workload while retaining studies ultimately included in a systematic review?**
+
+Keep this deliberately simple. Do not build a production systematic-review screening system. This is intended as a small experiment for a blog post.
+
+## Background
+
+We will use an existing labelled systematic-review dataset from the **ASReview SYNERGY dataset**.
+
+The specific dataset is called:
+
+`Donners_2021`
+
+Do not assume anything about this dataset in advance. Retrieve it from the SYNERGY dataset package/repository and inspect it before writing the analysis.
+
+The dataset corresponds to the 2021 systematic review:
+
+**Donners AAMT et al. Pharmacokinetics and Associated Efficacy of Emicizumab in Humans: A Systematic Review. Clinical Pharmacokinetics. 2021. DOI: 10.1007/s40262-021-01042-w**
+
+According to SYNERGY, the dataset should contain approximately:
+
+* 258 retrieved records
+* 15 studies ultimately included in the systematic review
+* title and abstract fields
+* a binary `label_included` or equivalent indicating final inclusion
+
+Verify these numbers from the downloaded data rather than hard-coding them.
+
+The original review eligibility criteria recorded in SYNERGY are:
+
+> Emicizumab studies providing:
+>
+> 1. data on humans
+> 2. original pharmacokinetic data, modelled pharmacokinetic data, or PK/PD relationships
+> 3. access to the abstract and full text in English
+
+For this experiment, Jev receives **title and abstract only**. Therefore do not ask Jev to determine full-text availability. Adapt the operational criteria accordingly.
+
+## Important methodological limitation
+
+The SYNERGY inclusion label represents studies **ultimately included in the systematic review**.
+
+It does NOT necessarily represent the original reviewers' title/abstract screening decision.
+
+Therefore throughout the code, README and results describe the experiment as:
+
+> Can Jev identify studies that were ultimately included in the review from their titles and abstracts while reducing the number of records requiring human screening?
+
+Do NOT claim:
+
+> Jev reproduces the original title/abstract screening decisions.
+
+Also distinguish between:
+
+1. a fixed prospective threshold such as 0.50; and
+2. an **oracle/post-hoc threshold** selected after looking at the known labels.
+
+The latter is useful descriptively but cannot be presented as a validated operational threshold.
+
+---
+
+# Phase 1: Create the project
+
+Create a small Python project such as:
+
+```text
+jev-screening-test/
+    README.md
+    requirements.txt
+    run_jev_screening.py
+    outputs/
+```
+
+Use Python 3.10 or newer.
+
+Likely dependencies:
+
+```text
+typesafe-sdk
+synergy-dataset
+pandas
+matplotlib
+```
+
+Add anything else only if needed.
+
+---
+
+# Phase 2: Retrieve and inspect Donners_2021
+
+Use the official/open `synergy-dataset` Python package where possible.
+
+Install it and retrieve the dataset identified as:
+
+```text
+Donners_2021
+```
+
+Before doing anything with Jev:
+
+1. print the dataset shape;
+2. print column names;
+3. identify the title field;
+4. identify the abstract field;
+5. identify the final-inclusion label;
+6. count included and excluded records;
+7. count records with missing abstracts.
+
+The expected scale is around 258 records with around 15 positive labels, but derive the actual counts from the downloaded dataset.
+
+If the SYNERGY API/package syntax has changed, inspect its current package documentation or source rather than guessing.
+
+Save a clean working dataframe containing at least:
+
+```text
+record_id
+title
+abstract
+label_included
+```
+
+Do not use the final inclusion label anywhere in the Jev prompt.
+
+---
+
+# Phase 3: Configure Jev
+
+Use the current official TypeSafe Python SDK.
+
+Before implementation, check the current TypeSafe documentation because the SDK/API is new and may change.
+
+Prefer something conceptually like:
+
+```python
+from typesafe_sdk import Noul, TypeSafeClient
+```
+
+The TypeSafe API key should come from the environment:
+
+```text
+TYPESAFE_API_KEY
+```
+
+Never put the API key in source code.
+
+Use Jev's current default model or `jev-latest` unless the current official documentation recommends something different.
+
+Record the actual model returned by the API in the results so the experiment is reproducible.
+
+---
+
+# Phase 4: Define ONE Jev screening decision
+
+Keep the test intentionally simple.
+
+For every record give Jev:
+
+```text
+TITLE:
+<title>
+
+ABSTRACT:
+<abstract>
+```
+
+Provide this screening context:
+
+```text
+Systematic-review eligibility criteria:
+
+Retain the record if the title and abstract indicate that the study meets,
+or may plausibly meet, BOTH of the following:
+
+1. The study concerns emicizumab and provides data on humans.
+
+2. The study provides original pharmacokinetic data, modelled
+pharmacokinetic data, or pharmacokinetic/pharmacodynamic relationships.
+
+If the title or abstract does not provide enough information to confidently
+exclude the record, retain it for human screening.
+
+Exclude only when the record clearly fails one or more criteria.
+```
+
+Use a Jev **Noul** question approximately like:
+
+```text
+Based ONLY on the supplied title and abstract, should this record be
+retained for further human screening for this systematic review?
+```
+
+Where possible define criteria for:
+
+```text
+true = retain for human screening
+false = confidently exclude
+```
+
+Retrieve the Noul probability representing the probability of `true`.
+
+Call this:
+
+```text
+jev_probability
+```
+
+Do not ask Jev for explanations, summaries or chain-of-thought.
+
+The entire point is to test Jev as a bounded decision model rather than as a generative LLM.
+
+---
+
+# Phase 5: Smoke test before running all records
+
+First run approximately 5 records.
+
+Include:
+
+* at least one known ultimately included study;
+* at least one clearly irrelevant study if possible;
+* several ordinary records.
+
+Print:
+
+```text
+title
+actual final inclusion label
+Jev probability
+```
+
+Check that:
+
+* the SDK call works;
+* the Noul value is a number between 0 and 1;
+* the intended direction is correct: higher probability = more reason to retain;
+* no labels are leaking into the Jev state or question.
+
+Only then run the full dataset.
+
+---
+
+# Phase 6: Run all records
+
+Run Jev on every title/abstract.
+
+Save results incrementally so an interrupted run can resume without paying to evaluate the same records again.
+
+Create a stable record identifier, for example from the existing ID or a hash of title + abstract.
+
+Output:
+
+```text
+outputs/jev_results.csv
+```
+
+With columns such as:
+
+```text
+record_id
+title
+abstract
+label_included
+jev_probability
+jev_model
+input_tokens
+output_tokens
+latency_seconds
+error
+```
+
+If API usage information is supplied, store it.
+
+Use modest concurrency if appropriate, but optimise first for reliability and simplicity rather than speed.
+
+Handle retries and rate limits.
+
+Do not silently drop failed records.
+
+---
+
+# Phase 7: Evaluate Jev
+
+The central metric is NOT overall accuracy.
+
+Because systematic-review screening prioritises avoiding missed relevant studies, focus on:
+
+* recall/sensitivity;
+* false negatives;
+* workload reduction.
+
+Define:
+
+```text
+recall =
+included studies retained /
+all ultimately included studies
+```
+
+Define:
+
+```text
+workload reduction =
+records Jev would automatically exclude /
+all records
+```
+
+For several fixed thresholds, for example:
+
+```text
+0.10
+0.20
+0.30
+0.40
+0.50
+0.60
+0.70
+0.80
+0.90
+```
+
+calculate:
+
+```text
+threshold
+true positives
+false negatives
+true negatives
+false positives
+recall
+specificity
+precision
+number retained for human screening
+number automatically excluded
+workload reduction %
+```
+
+Save:
+
+```text
+outputs/threshold_results.csv
+```
+
+---
+
+# Phase 8: Calculate the post-hoc 100% recall point
+
+This is probably the most interesting descriptive statistic for the blog post.
+
+Among the 15 or so studies that were ultimately included, find:
+
+```text
+minimum Jev probability
+```
+
+This is effectively the highest threshold that can still retain every ultimately included record.
+
+Then report:
+
+```text
+Post-hoc threshold required for 100% recall
+Number of included studies retained
+Number of included studies missed
+Number of all records retained for human screening
+Number of records automatically excluded
+Workload reduction %
+```
+
+Label this clearly:
+
+**Post-hoc/oracle 100%-recall threshold**
+
+Explain that it was determined using the known labels and therefore measures how separable the records were according to Jev. It is NOT a threshold that could have been selected prospectively without validation data.
+
+Also calculate the analogous threshold achieving at least:
+
+```text
+95% recall
+```
+
+if meaningful given the small number of positive cases.
+
+---
+
+# Phase 9: Examine the mistakes
+
+Produce:
+
+```text
+outputs/included_studies_ranked.csv
+```
+
+containing all ultimately included papers sorted from LOWEST to HIGHEST Jev probability.
+
+This is important.
+
+The most interesting qualitative cases will probably be the included studies that Jev gave very low retention probabilities.
+
+For the lowest-scoring included records show:
+
+```text
+title
+abstract
+Jev probability
+```
+
+Do not automatically explain why Jev made the decision unless there is direct evidence. Instead describe what information is or is not visible in the title/abstract.
+
+Also produce:
+
+```text
+outputs/highest_scoring_excluded.csv
+```
+
+showing perhaps the top 10 ultimately excluded papers given the highest Jev probabilities.
+
+These may reveal records that genuinely look eligible from the abstract but were excluded after full-text examination.
+
+That would be an important reminder that our final-inclusion labels are not title/abstract labels.
+
+---
+
+# Phase 10: Produce two simple figures
+
+Create:
+
+### Figure 1 — Recall versus workload reduction
+
+X-axis:
+
+```text
+Workload reduction %
+```
+
+Y-axis:
+
+```text
+Recall of ultimately included studies %
+```
+
+Plot the threshold trade-off.
+
+Mark the post-hoc 100%-recall point.
+
+Save:
+
+```text
+outputs/recall_vs_workload.png
+```
+
+### Figure 2 — Jev probability distribution
+
+Compare Jev probabilities for:
+
+```text
+ultimately included studies
+versus
+ultimately excluded studies
+```
+
+Save:
+
+```text
+outputs/probability_distribution.png
+```
+
+Keep the plots visually simple.
+
+---
+
+# Phase 11: Generate a plain-English results summary
+
+Automatically create:
+
+```text
+outputs/summary.md
+```
+
+Include:
+
+### Dataset
+
+* number of records
+* number ultimately included
+* number ultimately excluded
+* missing abstracts
+
+### Main result
+
+Something like:
+
+```text
+At a post-hoc threshold preserving 100% of the ultimately included
+studies, Jev would have automatically excluded X of Y records,
+corresponding to a workload reduction of Z%.
+```
+
+Then explicitly add:
+
+```text
+This threshold was selected after examining the known labels and is
+therefore an oracle/post-hoc threshold, not a prospectively validated
+screening threshold.
+```
+
+### Fixed threshold result
+
+Give the results at threshold 0.50 separately.
+
+### Errors
+
+Report:
+
+```text
+number of API failures
+number of missing abstracts
+```
+
+### Runtime/API use
+
+If available report:
+
+```text
+total runtime
+input tokens
+output tokens
+approximate cost
+```
+
+Do not hard-code pricing. If estimating cost, first obtain current TypeSafe pricing and state the date/source used.
+
+---
+
+# Phase 12: README
+
+Write a short README explaining:
+
+1. what Donners_2021 is;
+2. where the data come from;
+3. what Jev is being asked to do;
+4. how to install requirements;
+5. how to set `TYPESAFE_API_KEY`;
+6. how to run the experiment;
+7. what outputs are produced;
+8. the methodological limitations.
+
+Make the exact command to run the experiment obvious.
+
+---
+
+# Interpretation rules
+
+Do not write marketing conclusions such as:
+
+```text
+Jev can safely automate systematic-review screening.
+```
+
+This experiment alone cannot establish that.
+
+Acceptable conclusions include:
+
+```text
+In this single retrospective dataset, Jev could separate many eventually
+excluded records from the ultimately included studies.
+```
+
+or, if performance is poor:
+
+```text
+Once 100% recall was required, Jev provided little useful workload reduction.
+```
+
+The experiment is exploratory and retrospective.
+
+Do not generalise beyond this review.
+
+---
+
+# Definition of done
+
+The project is complete when I can:
+
+1. set `TYPESAFE_API_KEY`;
+2. run one Python command;
+3. retrieve Donners_2021 automatically;
+4. send all titles/abstracts to Jev;
+5. resume rather than repeat completed API calls;
+6. obtain `jev_results.csv`;
+7. obtain a threshold-performance table;
+8. see the post-hoc 100%-recall workload reduction;
+9. inspect Jev's lowest-scoring ultimately included studies;
+10. see the two graphs;
+11. read a concise `summary.md`.
+
+Before running the expensive/full API step, show me the dataset validation and the results from the 5-record smoke test so that obvious implementation errors can be caught.

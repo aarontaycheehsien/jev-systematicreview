@@ -1,0 +1,71 @@
+# Jev-QA-2024 experiment
+
+## Methods and design
+
+### Dataset and information shown to Jev
+
+This is a retrospective ranking comparison on the same eight CLEF-TAR 2019 DTA reviews and the same 26,832 records with abstracts used by the completed filtered Holistic experiment. Each method ranks the records within each review; records are not pooled across reviews. No new candidates were retrieved.
+
+For Jev-QA, the five criterion-level questions for each review are copied verbatim from Appendix A of Akinseloyin et al. (2024), *A question-answering framework for automated abstract screening using large language models* (JAMIA 2024;31(9):1939–1952). Each question is judged separately for every record, giving five Jev calls per record and 134,160 calls in total. Each call receives that one exact question and the record's title and abstract. It receives no qrel/gold label, previous Jev score, rank, or answer about another record. Labels and Holistic scores are joined only after all QA judgements are complete. The pinned model is `jev-1.13.0`.
+
+The three answer classes mean:
+
+- **POSITIVE:** the title and abstract support a YES answer and are compatible with the criterion.
+- **NEUTRAL:** the information is insufficient or ambiguous, so the abstract does not confirm an answer either way.
+- **NEGATIVE:** the title and abstract clearly support a NO answer and indicate incompatibility with the criterion.
+
+### Compared scoring methods
+
+**Jev-Holistic (existing baseline).** This is the previously completed condition, not rerun for this experiment. It makes one binary structured Noul judgement per record using the existing prompt, “Based ONLY on this record's title and abstract and the review-specific criteria, should this record be retained for human screening?” The review-specific inclusion and exclusion criteria and the record's title and abstract are supplied; the positive/true choice means retain and the negative/false choice means confidently exclude. The saved probability of the retain/true choice, `jev_probability` (0–1), is the ranking score: higher values rank earlier. Its predictions and costs are reused as recorded in the filtered baseline file.
+
+**Jev-QA-Hard (primary).** Jev returns a three-way Choice answer for each of the five published questions. For scoring, the winning class is mapped to POSITIVE = 1, NEUTRAL = 0.5, NEGATIVE = 0. The record score is the arithmetic mean of its five mapped answers. This is the hard-answer formulation: it uses the chosen class and does not use the size of the class probabilities.
+
+**Jev-QA-Expected (secondary).** This uses the same question calls and their full three-class probability distributions. For each question, its score is `p_positive + 0.5 × p_neutral` (equivalent to assigning zero weight to `p_negative`); the record score is the mean across the five questions. It is a Jev-specific probabilistic variant and is not a replication of the 2024 paper's scoring pipeline. QA-Hard remains primary regardless of which score performs better.
+
+All three methods rank records in descending score order. Ties are broken by ascending numeric PMID, then PMID text, matching the existing benchmark. The QA run uses structured Choice answers and the published question decomposition only. It does not add generated answer explanations, BART answer scoring, question-level embedding reranking, or criteria-level embedding reranking, so it does not reproduce Akinseloyin et al.'s full pipeline.
+
+### Evaluation measures
+
+Gold labels are used only for evaluation after scoring. For each review and method, **N** is the number of ranked records, **relevant** is the number labeled included by the evaluation qrels, and **prevalence** is relevant/N. **MAP** is mean average precision: the mean of precision at the rank of each relevant record. **Recall@5/10/20/30/50%** is the fraction of relevant records found in the top corresponding fraction of the ranked list; each cutoff contains `ceil(p × N)` records, with a minimum of one.
+
+**WSS@95** (work saved over sampling at 95% recall) is `1 - k95/N - 0.05`, where `k95` is the rank at which the list first reaches `ceil(0.95 × relevant)` relevant records. **WSS@100** is `1 - rank_of_last_relevant/N`; it reflects the fraction of the list that can be left unscreened before the last relevant record. Higher WSS, recall, and MAP indicate better ranking performance. Metrics are first calculated separately for each review. The mean, sample SD, median, minimum, and maximum across the eight review-level values are then reported without pooling records.
+
+## Review-level primary comparison
+
+| Review | N | Relevant | Holistic WSS95 | QA-Hard WSS95 | QA-Expected WSS95 | Holistic WSS100 | QA-Hard WSS100 | QA-Expected WSS100 | Holistic MAP | QA-Hard MAP | QA-Expected MAP |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| CD008874 | 1,799 | 114 | 0.7605 | 0.7132 | 0.7599 | 0.7643 | 0.5759 | 0.5675 | 0.6292 | 0.4782 | 0.5329 |
+| CD009044 | 3,120 | 11 | 0.7814 | 0.8619 | 0.7814 | 0.8314 | 0.9119 | 0.8314 | 0.5793 | 0.5964 | 0.6054 |
+| CD011686 | 8,032 | 63 | 0.7537 | 0.2280 | 0.3641 | 0.4519 | 0.1205 | 0.1943 | 0.3322 | 0.1231 | 0.1206 |
+| CD012080 | 6,314 | 73 | 0.8005 | 0.7967 | 0.8179 | 0.7179 | 0.7868 | 0.8383 | 0.2151 | 0.1203 | 0.1702 |
+| CD012233 | 430 | 38 | 0.2733 | 0.1686 | 0.0616 | 0.2791 | 0.2116 | 0.1070 | 0.5076 | 0.3158 | 0.3608 |
+| CD012567 | 5,863 | 11 | 0.9319 | 0.1501 | 0.7296 | 0.9819 | 0.2001 | 0.7796 | 0.4487 | 0.3923 | 0.5167 |
+| CD012669 | 1,155 | 70 | 0.5881 | 0.5102 | 0.5699 | 0.4407 | 0.3974 | 0.4675 | 0.3766 | 0.2979 | 0.3718 |
+| CD012768 | 119 | 43 | 0.2945 | 0.1433 | 0.2021 | 0.2689 | 0.1597 | 0.1681 | 0.5822 | 0.5885 | 0.5804 |
+
+## Interpretation
+
+- Mean WSS@95: Holistic 0.6480; QA-Hard 0.4465 (-0.2015); QA-Expected 0.5358 (-0.1122).
+- Mean WSS@100: Holistic 0.5920; QA-Hard 0.4205 (-0.1715); QA-Expected 0.4942 (-0.0978).
+- QA-Hard improves WSS@95 over Holistic on 1/8 reviews; QA-Expected does so on 1/8. Review-level paired changes are in `aggregate_comparison.csv`.
+- CD012233: WSS@95 is 0.2733 Holistic, 0.1686 QA-Hard (-0.1047), and 0.0616 QA-Expected (-0.2116); WSS@100 changes are -0.0674 (Hard) and -0.1721 (Expected).
+- CD012768: WSS@95 is 0.2945 Holistic, 0.1433 QA-Hard (-0.1513), and 0.2021 QA-Expected (-0.0924); WSS@100 changes are -0.1092 (Hard) and -0.1008 (Expected).
+- Across mean WSS@95, WSS@100, and MAP, QA-Hard is higher than QA-Expected on 0/3 metrics. QA-Hard remains the prespecified primary score; QA-Expected remains secondary.
+- The measured extra cost is $2.9802. Whether the WSS gain justifies that cost depends on the acceptable review-work reduction; the measured gain per dollar is reported below and no method is reclassified as primary based on performance.
+
+## Calls, cost, and runtime
+
+- Review-record pairs: 26,832
+- Total question judgements (successful plus failed): 134,160
+- Input/output tokens: 101,268,648 / 6,171,360
+- Estimated QA cost: $4.2533; filtered holistic estimated cost: $1.2731; ratio: 3.34×.
+- WSS@95 gain per additional dollar: QA-Hard $-0.0676/$; QA-Expected $-0.0376/$, where added cost is $2.9802.
+- Sum of Jev call latency: 44163.0 seconds. Active scoring wall-clock was approximately 5,650 seconds (94 minutes), reconstructed from progress logs across the initial and resumed API runs; the exact combined wall time was not persisted. This excludes the time waiting for credits before resuming.
+- Filtered holistic baseline: 8916.6 summed call-latency seconds, 1182.4s estimated concurrent wall time, and 30,311,402/536,640 input/output tokens.
+- API failures: 0.
+- Holistic wall time is estimated by scaling the recorded concurrent 30,521-call run to the 26,832 filtered pairs; it is not a directly measured filtered-only runtime.
+- `low_scoring_included.csv` includes gold-positive records whose Holistic and QA-Hard ranks differ by at least 5% of that review's N (minimum 10 ranks).
+
+## Caveats
+
+This is a retrospective comparison on eight DTA topics. The final-inclusion qrels are evaluation labels, not necessarily original abstract-screening decisions. No conclusions about autonomous exclusion or generalization follow from this benchmark alone. No question, threshold, or parameter was changed based on qrels. Questions are attributed to Akinseloyin et al. 2024 supplementary Appendix A.

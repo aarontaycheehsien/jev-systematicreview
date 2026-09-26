@@ -1,0 +1,1 @@
+rerun the evaluation, without any new Jev calls, after restricting `dta_record_scores.csv` to records with non-missing abstracts. Report the eight per-review Ns, positives, WSS\@95 and aggregate mean.  create a new folder with suitable name and recalculate all the supporting files and images and put into it

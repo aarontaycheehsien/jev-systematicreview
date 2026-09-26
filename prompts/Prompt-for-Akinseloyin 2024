@@ -1,0 +1,228 @@
+Here is a version you can give directly to Codex. I would frame it as an **extension of the existing Jev experiment**, not a new project.
+
+Akinseloyin 2024 evaluated the eight CLEF-TAR 2019 DTA reviews zero-shot and reported **mean WSS@95 = 0.653** for its strongest configuration, Claude 3 QA plus Gemini `text-embedding-004` reranking. ([OUP Academic][1]) The 2026 follow-up used multi-LLM collaboration on the same DTA category and reported **mean WSS@95 = 0.680 ± 0.228** for Soft-Vote, with WSS@100 = 0.667. ([DOI][2])
+
+> **Codex task: extend the existing Jev screening benchmark to the eight CLEF-TAR 2019 DTA reviews**
+>
+> You already have the earlier instructions and working code for the Jev title/abstract screening experiment. Extend that existing pipeline rather than starting over.
+>
+> 1. **Objective**
+>
+>    Evaluate Jev zero-shot screening on exactly the **eight Diagnostic Test Accuracy (DTA) reviews from CLEF-TAR 2019**, so the results can be compared directly with Akinseloyin et al. 2024 and 2026.
+>
+>    The eight review IDs are:
+>
+>    `CD008874`
+>    `CD009044`
+>    `CD011686`
+>    `CD012080`
+>    `CD012233`
+>    `CD012567`
+>    `CD012669`
+>    `CD012768`
+>
+> 2. **Use the official CLEF-TAR 2019 DTA test set as the source of candidate records and gold labels**
+>
+>    Repository:
+>    `https://github.com/CLEF-TAR/tar`
+>
+>    Relevant path:
+>    `2019-TAR/Task2/Testing/DTA/`
+>
+>    For each review:
+>
+>    * obtain the PMID list from its `topics/<REVIEW_ID>` file;
+>    * obtain relevance labels from the DTA qrels;
+>    * retrieve title and abstract from PubMed for each PMID;
+>    * retain the original CLEF record set rather than substituting another search result set.
+>
+>    Cache the retrieved PubMed metadata locally so API calls do not need to be repeated.
+>
+> 3. **Get detailed inclusion/exclusion criteria for each review**
+>
+>    CLEF itself mainly supplies review title, query and PMIDs. For the Jev judgement, use the structured criteria available in:
+>
+>    `https://github.com/XITASO/lgar/blob/main/implementation/data/tar2019/dta/info.json`
+>
+>    This file contains, for each DTA review:
+>
+>    * title;
+>    * inclusion criteria;
+>    * exclusion criteria;
+>    * research question;
+>    * objectives;
+>    * source-review link.
+>
+>    Store a local copy of the criteria used for every review in the experiment output.
+>
+>    Do **not** expose the gold qrels or inclusion labels to Jev.
+>
+> 4. **Preserve the Jev method already established in the earlier experiment**
+>
+>    Do not optimise the prompt separately for individual DTA reviews after seeing results.
+>
+>    Use the same Jev model, judgement structure, scoring method and handling of uncertainty established in the previous experiment. Only substitute the review-specific eligibility criteria.
+>
+>    Treat this as zero-shot screening:
+>
+>    * no labelled examples;
+>    * no fine-tuning;
+>    * no active learning;
+>    * no threshold tuning using DTA gold labels before producing the primary results.
+>
+>    Record the exact Jev model version returned by the API.
+>
+> 5. **Primary evaluation should be ranking-based WSS@95**
+>
+>    For each review, rank all records from highest to lowest Jev retain/relevance score.
+>
+>    Find the smallest number of top-ranked records required to retrieve at least 95% of the gold-standard relevant records.
+>
+>    Calculate:
+>
+>    `workload_reduction_at_95 = 1 - (records_screened_to_95 / total_records)`
+>
+>    and standard:
+>
+>    `WSS@95 = workload_reduction_at_95 - 0.05`
+>
+>    Do not confuse raw workload reduction with WSS@95.
+>
+>    Also calculate WSS@100 in the analogous way:
+>
+>    `WSS@100 = 1 - (records_screened_to_100 / total_records)`
+>
+> 6. **Also calculate the metrics used by Akinseloyin where practical**
+>
+>    For every review calculate:
+>
+>    * total records;
+>    * number relevant;
+>    * prevalence;
+>    * MAP / average precision;
+>    * Recall@5%;
+>    * Recall@10%;
+>    * Recall@20%;
+>    * Recall@50%;
+>    * WSS@95;
+>    * WSS@100;
+>    * rank of the last relevant record;
+>    * Jev latency;
+>    * input/output tokens;
+>    * API errors.
+>
+>    Make WSS@95 the primary metric.
+>
+> 7. **Aggregate across the eight reviews in the same spirit as Akinseloyin**
+>
+>    Produce:
+>
+>    * arithmetic mean WSS@95 across the eight reviews;
+>    * standard deviation;
+>    * median;
+>    * range;
+>    * mean WSS@100;
+>    * mean MAP;
+>    * mean Recall@5%, @10%, @20%, @50%.
+>
+>    Do **not** pool all records into one giant dataset for the main comparison. The main result should be the mean across eight review-level results because the published benchmark is reported across review topics.
+>
+> 8. **Create a direct benchmark table**
+>
+>    Include at least:
+>
+>    | System                                         | Setting             |   Mean DTA WSS@95 |
+>    | ---------------------------------------------- | ------------------- | ----------------: |
+>    | Akinseloyin 2024, Claude QA + Gemini reranking | zero-shot           |             0.653 |
+>    | Akinseloyin 2026, Soft-Vote                    | zero-shot multi-LLM |             0.680 |
+>    | Jev                                            | zero-shot           | calculated result |
+>
+>    Also include WSS@100 where the published number is available.
+>
+>    For Akinseloyin 2024, the strongest reported DTA system had WSS@95 **0.653** and WSS@100 **0.573**.
+>
+>    For Akinseloyin 2026 Soft-Vote on DTA, use WSS@95 **0.680** and WSS@100 **0.667**.
+>
+> 9. **Do not claim a head-to-head model comparison without noting methodological differences**
+>
+>    Explicitly document that:
+>
+>    * Akinseloyin 2024 decomposed selection criteria into QA questions and then used embedding-based reranking;
+>    * Akinseloyin 2026 combined multiple LLM outputs through collaborative strategies;
+>    * Jev is a single lightweight judgement model with no review-specific training;
+>    * therefore the most meaningful comparison is screening effectiveness versus computational/model complexity, not merely which number is largest.
+>
+> 10. **Threshold analysis is secondary**
+>
+>     In addition to ranking-based WSS@95, apply the previously frozen Jev operational threshold if one exists from the earlier experiment.
+>
+>     Report recall and workload reduction at that fixed threshold for each review.
+>
+>     Do **not** choose a new threshold separately for each DTA review and present that as prospective performance.
+>
+>     If useful, also calculate an oracle/post-hoc threshold for descriptive purposes, but label it explicitly:
+>
+>     `post_hoc_oracle`
+>
+>     Keep it separate from the primary zero-shot result.
+>
+> 11. **Inspect failures**
+>
+>     Produce a file containing every gold-positive study that ranks below the point needed for 95% recall or has a particularly low Jev score.
+>
+>     For each, include:
+>
+>     * review ID;
+>     * PMID;
+>     * title;
+>     * abstract;
+>     * Jev score;
+>     * rank;
+>     * percentile rank;
+>     * relevant criterion if identifiable.
+>
+>     We want to know whether Jev systematically fails when an eligibility characteristic is simply absent from the abstract, as seen in the earlier Donners experiment.
+>
+> 12. **Required outputs**
+>
+>     Create:
+>
+>     `dta_review_results.csv` — one row per review with all metrics
+>     `dta_record_scores.csv` — one row per record with Jev score and gold label
+>     `dta_low_scoring_included.csv` — difficult relevant studies
+>     `dta_benchmark_comparison.csv` — Jev vs published 2024/2026 aggregate results
+>     `dta_summary.md` — concise interpretation
+>     `wss95_by_review.png` — eight-review bar chart including mean
+>     `recall_curves.png` — preferably one clear figure showing review-level ranking performance
+>
+> 13. **Validation checks before reporting**
+>
+>     Confirm for every review that:
+>
+>     * PMID count from CLEF matches the number processed, apart from explicitly documented PubMed retrieval failures;
+>     * qrel labels map correctly to PMIDs;
+>     * every scored record has exactly one gold label;
+>     * no gold labels entered the Jev prompt;
+>     * WSS@95 uses the first rank at which recall is ≥0.95;
+>     * WSS@95 subtracts the 0.05 random-screening baseline;
+>     * ties in Jev scores are handled deterministically and documented.
+>
+> 14. **Final interpretation**
+>
+>     Answer these questions without overstating the result:
+>
+>     * What is Jev's mean and median WSS@95 across the eight DTA reviews?
+>     * How variable is performance across reviews?
+>     * How does it compare descriptively with 0.653 from Akinseloyin 2024 and 0.680 from Akinseloyin 2026?
+>     * Does Jev obtain comparable screening efficiency despite using a much simpler zero-shot architecture?
+>     * Does its performance collapse on any particular DTA review?
+>     * What kinds of included studies does Jev rank poorly?
+>
+>     Do not describe Jev as better or worse solely from a small difference in the mean. Report the per-review distribution and methodological differences.
+
+One useful refinement is that I would make **ranking-based WSS@95 the headline metric**, rather than your Donners-style fixed probability threshold. Akinseloyin evaluates the **ordering produced by the model**: how far through that ordering you must screen to recover 95% of relevant studies. That gives you the cleanest apples-to-apples comparison. Their 2024 best DTA configuration achieved 95.5% mean recall by the first 50% of the ranking and WSS@95 of 0.653. ([OUP Academic][1])
+
+Also, the 2026 result has substantial across-review variation: DTA Soft-Vote WSS@95 was **0.680 with SD 0.228**. ([DOI][2]) That means the **eight individual Jev values may be more interesting than whether its mean happens to be 0.62, 0.66 or 0.70**.
+
+[1]: https://academic.oup.com/jamia/article/31/9/1939/7718667 "oup.silverchair-cdn.com"
+[2]: https://doi.org/10.1093/biomethods/bpag006?utm_source=chatgpt.com "Large language model-based multiagent collaboration for abstract screening toward automated systematic reviews | Biology Methods and Protocols | Oxford Academic"
