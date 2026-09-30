@@ -1,0 +1,4 @@
+system,setting,mean_dta_wss95,sd_dta_wss95,mean_dta_wss100,sd_dta_wss100,source
+"Akinseloyin 2024, Claude 3 QA + Gemini text-embedding-004 reranking",zero-shot QA and embedding reranking,0.653,,0.573,,https://academic.oup.com/jamia/article/31/9/1939/7718667
+"Akinseloyin 2026, Soft-Vote",zero-shot multi-LLM,0.68,0.228,0.667,0.266,https://academic.oup.com/biomethods/article/11/1/bpag006/8460762
+Jev,zero-shot single judgement model,0.6307774957298383,0.25898953521463697,0.5847742021422404,0.3090911809507762,This experiment

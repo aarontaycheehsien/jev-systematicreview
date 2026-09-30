@@ -1,0 +1,7 @@
+{
+  "scoring_wall_seconds": 497.3951789001003,
+  "workers": 8,
+  "score_rows": 30521,
+  "recorded_utc_finished": "2026-09-30T15:44:28Z",
+  "scoring_wall_note": "497.4 seconds is the final resumed scoring segment only; elapsed time for the earlier partial segment was not recorded."
+}
