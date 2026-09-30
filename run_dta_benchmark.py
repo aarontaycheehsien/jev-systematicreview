@@ -39,7 +39,7 @@ CLEF_COMMIT = "dbc13d02bb3e2f8ebc90e62ff47f5eb591e5ca20"
 CRITERIA_COMMIT = "49e94170dd0ff9380d8dfefecf8eec4692e8f05d"
 TYPE_SAFE_INPUT_PRICE_PER_MILLION = 0.042  # Jev 1.13 price checked 2026-09-21
 FIXED_THRESHOLD = 0.50  # carried forward from the prior experiment; no DTA tuning
-QUESTION = "Based ONLY on this record's title and abstract and the review-specific criteria, should this record be retained for human screening?"
+QUESTION = "Based ONLY on the record's `title` and `abstract` and the review-specific eligibility criteria, should this record be retained for human screening?"
 THREAD_LOCAL = threading.local()
 
 def download_sources(force: bool = False) -> None:
@@ -184,6 +184,33 @@ def saved_successes() -> set[tuple[str, str]]:
     return set(rows)
 
 
+def request_state(record: dict) -> dict[str, str]:
+    """Return only the candidate record text as Jev's structured state."""
+    return {
+        "title": record["title"] or "[TITLE UNAVAILABLE]",
+        "abstract": record["abstract"] or "[ABSTRACT UNAVAILABLE]",
+    }
+
+
+def make_retain_question(review: dict) -> Noul:
+    """Keep review eligibility logic in the question, separate from record state."""
+    instructions = (
+        f"Review title: {review['title']}\n"
+        f"Research question: {review['research_questions']}\n"
+        f"Review objectives: {review['objectives']}\n"
+        f"Inclusion criteria:\n{review['inclusion_criteria']}\n"
+        f"Exclusion criteria:\n{review['exclusion_criteria']}\n\n"
+        f"{QUESTION} "
+        "Retain when it meets or may plausibly meet the inclusion criteria and does not "
+        "clearly meet an exclusion criterion. If the title or abstract is insufficient "
+        "to exclude confidently, retain it."
+    )
+    return Noul(instructions=instructions, criteria={
+        "true": "Retain for human screening; the record meets or may plausibly meet the review's inclusion criteria and does not clearly meet an exclusion criterion.",
+        "false": "Confidently exclude; the title and abstract clearly show that the record fails an inclusion criterion or meets an exclusion criterion.",
+    })
+
+
 def open_client() -> TypeSafeClient:
     if not hasattr(THREAD_LOCAL, "client"):
         THREAD_LOCAL.client = TypeSafeClient()
@@ -193,19 +220,8 @@ def open_client() -> TypeSafeClient:
 def score_one(record: dict) -> dict:
     client = open_client()
     review = record["criteria"]
-    state = (
-        "Review title:\n" + str(review["title"]) +
-        "\n\nResearch question:\n" + str(review["research_questions"]) +
-        "\n\nReview objectives:\n" + str(review["objectives"]) +
-        "\n\nInclusion criteria:\n" + str(review["inclusion_criteria"]) +
-        "\n\nExclusion criteria:\n" + str(review["exclusion_criteria"]) +
-        "\n\nTITLE:\n" + (record["title"] or "[TITLE UNAVAILABLE]") +
-        "\n\nABSTRACT:\n" + (record["abstract"] or "[ABSTRACT UNAVAILABLE]")
-    )
-    question = Noul(instructions=QUESTION, criteria={
-        "true": "Retain for human screening; the record meets or may plausibly meet the review's inclusion criteria and does not clearly meet an exclusion criterion.",
-        "false": "Confidently exclude; the title and abstract clearly show that the record fails an inclusion criterion or meets an exclusion criterion.",
-    })
+    state = request_state(record)
+    question = make_retain_question(review)
     last = None
     for attempt in range(4):
         start = time.perf_counter()
@@ -226,15 +242,20 @@ def score_one(record: dict) -> dict:
 
 
 def write_batch(batch: list[dict]) -> None:
+    # Article text lives in the shared PubMed cache; don't duplicate it in the
+    # resume database. This keeps checkpoints small while retaining scores.
+    compact_batch = [{**row, "title": "", "abstract": ""} for row in batch]
     with sqlite3.connect(DB_FILE) as conn:
         conn.executemany("""INSERT OR REPLACE INTO scores
         (review_id,pmid,title,abstract,label_included,jev_probability,jev_model,input_tokens,output_tokens,latency_seconds,error)
-        VALUES (:review_id,:pmid,:title,:abstract,:label_included,:jev_probability,:jev_model,:input_tokens,:output_tokens,:latency_seconds,:error)""", batch)
+        VALUES (:review_id,:pmid,:title,:abstract,:label_included,:jev_probability,:jev_model,:input_tokens,:output_tokens,:latency_seconds,:error)""", compact_batch)
 
 
 def export_record_csv() -> pd.DataFrame:
     with sqlite3.connect(DB_FILE) as conn:
-        df = pd.read_sql_query("SELECT * FROM scores ORDER BY review_id, CAST(pmid AS INTEGER)", conn)
+        df = pd.read_sql_query("""SELECT review_id,pmid,label_included,jev_probability,jev_model,
+        input_tokens,output_tokens,latency_seconds,error FROM scores
+        ORDER BY review_id, CAST(pmid AS INTEGER)""", conn)
     df.to_csv(RECORD_CSV, index=False, encoding="utf-8-sig")
     return df
 
@@ -425,13 +446,21 @@ Across the eight reviews, fixed-threshold recall averaged {fixed_recall_mean:.1%
 
 
 def main() -> int:
+    global OUTPUTS, DB_FILE, RECORD_CSV, REVIEW_CSV, LOW_CSV, COMPARISON_CSV
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--refresh-source",action="store_true",help="redownload pinned CLEF/criteria source files")
     parser.add_argument("--workers",type=int,default=8)
+    parser.add_argument("--output-dir",type=Path,default=OUTPUTS,help="directory for this run's scores and reports")
     parser.add_argument("--validate-only",action="store_true",help="download/cache data and validate without Jev API calls")
     args=parser.parse_args()
     if args.workers<1 or args.workers>32:
         parser.error("--workers must be between 1 and 32")
+    OUTPUTS=args.output_dir.resolve()
+    DB_FILE=OUTPUTS/"dta_results.sqlite"
+    RECORD_CSV=OUTPUTS/"dta_record_scores.csv"
+    REVIEW_CSV=OUTPUTS/"dta_review_results.csv"
+    LOW_CSV=OUTPUTS/"dta_low_scoring_included.csv"
+    COMPARISON_CSV=OUTPUTS/"dta_benchmark_comparison.csv"
     download_sources(force=args.refresh_source)
     topics,qrels=load_topics_and_qrels()
     info=json.loads(INFO_FILE.read_text(encoding="utf-8"))
@@ -487,6 +516,8 @@ def main() -> int:
         scoring_wall_seconds=time.perf_counter()-start
         export_record_csv()
     records=export_record_csv()
+    records["title"] = records.pmid.astype(str).map(lambda pmid: cache.get(pmid, {}).get("title", ""))
+    records["abstract"] = records.pmid.astype(str).map(lambda pmid: cache.get(pmid, {}).get("abstract", ""))
     # Ensure one output row per candidate PMID even where retrieval/API errors occurred.
     expected={(rid,pmid) for rid in REVIEW_IDS for pmid in topics[rid]}
     actual=set(zip(records.review_id,records.pmid.astype(str)))
