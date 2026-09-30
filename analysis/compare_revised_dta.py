@@ -20,13 +20,20 @@ ROOT = Path(__file__).resolve().parents[1]
 BASELINE = ROOT / "data" / "jev_dta_scores.csv"
 REVISED = ROOT / "outputs" / "dta_revised" / "dta_record_scores.csv"
 CACHE = ROOT / "data" / "pubmed_metadata_cache.json"
-EXPECTED_BASELINE_SHA = "04232aacc47b2d4b52545721d77f0f8644ef210c85649bde72f405b04f8991c2"
+EXPECTED_BASELINE_GIT_BLOB = "fb8d8cf4d178ba31f7d44fa536023f070b462ac0"
 MEASURES = ("WSS@95", "WSS@100", "MAP", "Recall@5%", "Recall@10%", "Recall@20%", "Recall@50%")
 
 
-def read_and_validate(baseline_path: Path, revised_path: Path, allow_model_change: bool) -> pd.DataFrame:
-    if hashlib.sha256(baseline_path.read_bytes()).hexdigest() != EXPECTED_BASELINE_SHA:
-        raise ValueError("Baseline score file differs from the published original; do not silently compare changed inputs.")
+def git_blob_id(raw: bytes) -> str:
+    """Hash the same bytes as Git's blob object (portable across LF/CRLF checkouts)."""
+    return hashlib.sha1(b"blob " + str(len(raw)).encode() + b"\0" + raw).hexdigest()
+
+
+def read_and_validate(baseline_path: Path, revised_path: Path, allow_model_change: bool) -> tuple[pd.DataFrame, list[str], list[str]]:
+    baseline_bytes = baseline_path.read_bytes()
+    canonical_bytes = baseline_bytes.replace(b"\r\n", b"\n")
+    if EXPECTED_BASELINE_GIT_BLOB not in {git_blob_id(baseline_bytes), git_blob_id(canonical_bytes)}:
+        raise ValueError("Baseline score file differs from the published Git blob; do not silently compare changed inputs.")
     original = pd.read_csv(baseline_path, dtype={"review_id": str, "pmid": str})
     revised = pd.read_csv(revised_path, dtype={"review_id": str, "pmid": str})
     original_required = {"review_id", "pmid", "label_included", "jev_probability", "jev_model", "abstract_available"}
