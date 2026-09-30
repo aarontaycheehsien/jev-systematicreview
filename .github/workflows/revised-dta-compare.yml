@@ -1,0 +1,28 @@
+name: Revised DTA offline comparison checks
+on:
+  push:
+    branches:
+      - codex/eight-dta-revised-holistic-comparison
+  pull_request:
+    paths:
+      - analysis/compare_revised_dta.py
+      - tests/test_revised_dta_compare.py
+      - data/jev_dta_scores.csv
+      - .github/workflows/revised-dta-compare.yml
+permissions:
+  contents: read
+jobs:
+  offline-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install offline-only dependencies
+        run: python -m pip install "pandas>=2.2" "matplotlib>=3.9"
+      - name: Check syntax
+        run: python -m compileall -q analysis/compare_revised_dta.py tests/test_revised_dta_compare.py
+      - name: Run tests against published baseline
+        run: python -m unittest discover -s tests -p "test_revised_dta_compare.py" -v
