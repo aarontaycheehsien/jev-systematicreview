@@ -1,0 +1,55 @@
+{
+  "title": "Club Eligibility: The $1.46 Bouncer",
+  "duration_seconds": 225,
+  "fps": 24,
+  "width": 1920,
+  "height": 1080,
+  "spoken_words": 445,
+  "source_article": "https://aarontay.substack.com/p/can-jev-a-super-cheap-super-fast",
+  "revised_bar_source": "outputs/dta_structured_state_2026-09-30/abstract_filter_metrics.csv; dataset=rerun_abstract_available",
+  "review_bars": [
+    {
+      "review_id": "CD008874",
+      "n": 1799,
+      "wss95": 0.7493329627570873
+    },
+    {
+      "review_id": "CD009044",
+      "n": 3120,
+      "wss95": 0.889102564102564
+    },
+    {
+      "review_id": "CD011686",
+      "n": 8032,
+      "wss95": 0.863097609561753
+    },
+    {
+      "review_id": "CD012080",
+      "n": 6314,
+      "wss95": 0.8141114982578397
+    },
+    {
+      "review_id": "CD012233",
+      "n": 430,
+      "wss95": 0.24767441860465117
+    },
+    {
+      "review_id": "CD012567",
+      "n": 5863,
+      "wss95": 0.9365256694524987
+    },
+    {
+      "review_id": "CD012669",
+      "n": 1155,
+      "wss95": 0.5976190476190475
+    },
+    {
+      "review_id": "CD012768",
+      "n": 119,
+      "wss95": 0.19369747899159667
+    }
+  ],
+  "voice_engine": "Windows System.Speech; locally installed voices",
+  "music": "Original synthesized score; no external music samples",
+  "subtitles": "Burned into MP4; matching SRT and VTT also supplied"
+}

@@ -1,0 +1,14 @@
+# Locally generated Windows text-to-speech clips and per-word timing data.
+/audio/
+
+# Recreated render intermediates and verification output.
+/deliverables/master_audio.wav
+/deliverables/voiceover.wav
+/deliverables/captions.json
+/deliverables/voice_timings.json
+/deliverables/frame_*.png
+/deliverables/player_*.png
+/deliverables/*player*.json
+/deliverables/*player*.log
+/deliverables/decode_check.log
+/deliverables/render.log

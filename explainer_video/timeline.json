@@ -1,0 +1,47 @@
+{
+  "title": "Club Eligibility: The $1.46 Bouncer",
+  "duration": 225,
+  "source": "https://aarontay.substack.com/p/can-jev-a-super-cheap-super-fast",
+  "scenes": [
+    {"start": 0, "end": 25, "title": "Just a quick review"},
+    {"start": 25, "end": 55, "title": "The expensive talent"},
+    {"start": 55, "end": 95, "title": "The receipt reveal"},
+    {"start": 95, "end": 125, "title": "The ensemble VIPs"},
+    {"start": 125, "end": 160, "title": "Management improves things"},
+    {"start": 160, "end": 225, "title": "One question"}
+  ],
+  "voices": {
+    "Narrator": "Microsoft George",
+    "Librarian": "Microsoft Hazel Desktop",
+    "LLM": "Microsoft David Desktop",
+    "PI": "Microsoft Zira Desktop",
+    "Paper": "Microsoft Mark"
+  },
+  "cues": [
+    {"start": 2.5, "end": 8.8, "speaker": "Narrator", "text": "Every systematic review begins with a perfectly reasonable request."},
+    {"start": 9.2, "end": 13.8, "speaker": "PI", "text": "Just a quick review. Shouldn't take long."},
+    {"start": 14.5, "end": 24.4, "speaker": "Narrator", "text": "Then the abstracts arrive. The search was comprehensive. Unfortunately, so were the consequences. Welcome to Club Eligibility. Full text upstairs."},
+    {"start": 26, "end": 34.7, "speaker": "Narrator", "text": "The generative model arrives with an entourage, a limousine, and the ability to turn one screening decision into a TED Talk."},
+    {"start": 35.2, "end": 41.7, "speaker": "LLM", "text": "Before deciding whether to retain this abstract, we must consider the epistemological status of relevance."},
+    {"start": 42.2, "end": 49.8, "speaker": "Librarian", "text": "You've written more about whether to read the abstract than the authors wrote in the abstract."},
+    {"start": 50.2, "end": 54.6, "speaker": "Narrator", "text": "Jev arrives with a folding stool. Jev does decisions."},
+    {"start": 56, "end": 67.8, "speaker": "Narrator", "text": "Give this zero-shot classifier the title, abstract, and eligibility criteria. It returns a structured decision with probabilities. No bespoke training. No free-text monologue. Here, one question orders the queue for human screening."},
+    {"start": 68.4, "end": 77.2, "speaker": "Narrator", "text": "Eight diagnostic test accuracy reviews. Twenty-six thousand, eight hundred and thirty-two records with abstracts. Mean WSS at ninety-five: zero point six six one."},
+    {"start": 77.8, "end": 88.7, "speaker": "Narrator", "text": "That's work saved over sampling at ninety-five percent recall, measured retrospectively. It isn't accuracy. Performance varies by review. The article reports a bill of about one dollar forty-six."},
+    {"start": 89.1, "end": 94.6, "speaker": "Librarian", "text": "Finally, research infrastructure we can expense without forming a steering committee."},
+    {"start": 96, "end": 108.2, "speaker": "Narrator", "text": "The published three-model ensemble does better: zero point six eight zero. Add embedding reranking: zero point seven zero eight. Jev remains impressively competitive for something with less furniture."},
+    {"start": 108.8, "end": 117.7, "speaker": "Librarian", "text": "Three models, one decision. A committee meeting with measurable output. Unsettling. Please record this unprecedented event in the minutes."},
+    {"start": 118.2, "end": 124.5, "speaker": "Narrator", "text": "These are published benchmark comparisons, using older models. Today's competitors may change the picture."},
+    {"start": 126, "end": 136.8, "speaker": "Narrator", "text": "Management spots an opportunity for improvement. Replace the single overall question with five criterion questionnaires. Five times the judgements. Surely that means better screening?"},
+    {"start": 137.3, "end": 145.4, "speaker": "Narrator", "text": "In this tested setup, the probability-based expected-score variant reaches only zero point five three six. More machinery. Worse ranking."},
+    {"start": 145.9, "end": 152.5, "speaker": "Librarian", "text": "We added bureaucracy and performance got worse. Finally, AI understands academia."},
+    {"start": 153, "end": 159.4, "speaker": "Narrator", "text": "The questions or scoring might be the problem. That's a hypothesis. Decomposition hasn't been convicted."},
+    {"start": 161.3, "end": 167.6, "speaker": "Librarian", "text": "One question. How do you know when to stop screening?"},
+    {"start": 168.4, "end": 181.1, "speaker": "Narrator", "text": "The evaluator consults the known benchmark labels. Those labels locate the ninety-five percent recall point after scoring. Jev never sees them. A retrospective result doesn't give a new review a validated stopping rule."},
+    {"start": 181.8, "end": 191, "speaker": "Librarian", "text": "Excellent crystal ball. Does it work before we know which studies are relevant? My protocol has a surprisingly strict policy on clairvoyance."},
+    {"start": 191.6, "end": 203.5, "speaker": "Narrator", "text": "Before trusting automated exclusions, prospectively validate thresholds, calibration, and stopping rules. Test other review types too. A probability needs checking, and eight DTA reviews aren't the whole evidence-synthesis universe."},
+    {"start": 204.1, "end": 208.5, "speaker": "Paper", "text": "The methods are in the full text."},
+    {"start": 209.1, "end": 216.7, "speaker": "Librarian", "text": "Of course they are. Heaven forbid the abstract become useful."},
+    {"start": 218, "end": 224.3, "speaker": "Narrator", "text": "Jev works the queue. The librarian keeps the keys. Cheap decisions. Expensive questions."}
+  ]
+}

@@ -1,0 +1,307 @@
+1
+00:00:02,556 --> 00:00:05,892
+NARRATOR: Every systematic review begins with a perfectly reasonable
+request.
+
+2
+00:00:09,255 --> 00:00:11,200
+PI: Just a quick review.
+
+3
+00:00:11,200 --> 00:00:12,390
+PI: Shouldn't take long.
+
+4
+00:00:14,500 --> 00:00:16,388
+NARRATOR: Then the abstracts arrive.
+
+5
+00:00:16,388 --> 00:00:18,432
+NARRATOR: The search was comprehensive.
+
+6
+00:00:18,432 --> 00:00:21,145
+NARRATOR: Unfortunately, so were the consequences.
+
+7
+00:00:21,145 --> 00:00:23,216
+NARRATOR: Welcome to Club Eligibility.
+
+8
+00:00:23,216 --> 00:00:24,320
+NARRATOR: Full text upstairs.
+
+9
+00:00:26,000 --> 00:00:29,998
+NARRATOR: The generative model arrives with an entourage, a limousine, and
+the ability to turn
+
+10
+00:00:29,998 --> 00:00:31,941
+NARRATOR: one screening decision into a TED Talk.
+
+11
+00:00:35,217 --> 00:00:40,172
+LLM: Before deciding whether to retain this abstract, we must
+consider the epistemological
+
+12
+00:00:40,172 --> 00:00:41,524
+LLM: status of relevance.
+
+13
+00:00:42,216 --> 00:00:46,456
+LIBRARIAN: You've written more about whether to read the abstract than the
+authors wrote in the
+
+14
+00:00:46,456 --> 00:00:47,516
+LIBRARIAN: abstract.
+
+15
+00:00:50,200 --> 00:00:52,705
+NARRATOR: Jev arrives with a folding stool.
+
+16
+00:00:52,705 --> 00:00:54,059
+NARRATOR: Jev does decisions.
+
+17
+00:00:56,000 --> 00:01:00,043
+NARRATOR: Give this zero-shot classifier the title, abstract, and
+eligibility criteria.
+
+18
+00:01:00,043 --> 00:01:02,550
+NARRATOR: It returns a structured decision with probabilities.
+
+19
+00:01:02,550 --> 00:01:03,964
+NARRATOR: No bespoke training.
+
+20
+00:01:03,964 --> 00:01:05,519
+NARRATOR: No free-text monologue.
+
+21
+00:01:05,519 --> 00:01:07,720
+NARRATOR: Here, one question orders the queue for human screening.
+
+22
+00:01:08,446 --> 00:01:10,739
+NARRATOR: Eight diagnostic test accuracy reviews.
+
+23
+00:01:10,739 --> 00:01:14,311
+NARRATOR: Twenty-six thousand, eight hundred and thirty-two records with
+abstracts.
+
+24
+00:01:14,311 --> 00:01:17,120
+NARRATOR: Mean WSS at ninety-five: zero point six six one.
+
+25
+00:01:17,800 --> 00:01:20,959
+NARRATOR: That's work saved over sampling at ninety-five percent recall,
+measured
+
+26
+00:01:20,959 --> 00:01:22,463
+NARRATOR: retrospectively.
+
+27
+00:01:22,463 --> 00:01:24,016
+NARRATOR: It isn't accuracy.
+
+28
+00:01:24,016 --> 00:01:26,054
+NARRATOR: Performance varies by review.
+
+29
+00:01:26,054 --> 00:01:28,620
+NARRATOR: The article reports a bill of about one dollar forty-six.
+
+30
+00:01:29,153 --> 00:01:34,477
+LIBRARIAN: Finally, research infrastructure we can expense without forming
+a steering committee.
+
+31
+00:01:36,000 --> 00:01:40,388
+NARRATOR: The published three-model ensemble does better: zero point six
+eight zero.
+
+32
+00:01:40,388 --> 00:01:43,953
+NARRATOR: Add embedding reranking: zero point seven zero eight.
+
+33
+00:01:43,953 --> 00:01:47,422
+NARRATOR: Jev remains impressively competitive for something with less
+furniture.
+
+34
+00:01:48,833 --> 00:01:51,145
+LIBRARIAN: Three models, one decision.
+
+35
+00:01:51,145 --> 00:01:53,683
+LIBRARIAN: A committee meeting with measurable output.
+
+36
+00:01:53,683 --> 00:01:54,988
+LIBRARIAN: Unsettling.
+
+37
+00:01:54,988 --> 00:01:57,620
+LIBRARIAN: Please record this unprecedented event in the minutes.
+
+38
+00:01:58,200 --> 00:02:02,112
+NARRATOR: These are published benchmark comparisons, using older models.
+
+39
+00:02:02,112 --> 00:02:04,173
+NARRATOR: Today's competitors may change the picture.
+
+40
+00:02:06,044 --> 00:02:09,069
+NARRATOR: Management spots an opportunity for improvement.
+
+41
+00:02:09,069 --> 00:02:13,198
+NARRATOR: Replace the single overall question with five criterion
+questionnaires.
+
+42
+00:02:13,198 --> 00:02:15,173
+NARRATOR: Five times the judgements.
+
+43
+00:02:15,173 --> 00:02:16,720
+NARRATOR: Surely that means better screening?
+
+44
+00:02:17,351 --> 00:02:21,397
+NARRATOR: In this tested setup, the probability-based expected-score
+variant reaches only zero
+
+45
+00:02:21,397 --> 00:02:23,163
+NARRATOR: point five three six.
+
+46
+00:02:23,163 --> 00:02:24,534
+NARRATOR: More machinery.
+
+47
+00:02:24,534 --> 00:02:25,320
+NARRATOR: Worse ranking.
+
+48
+00:02:25,941 --> 00:02:29,605
+LIBRARIAN: We added bureaucracy and performance got worse.
+
+49
+00:02:29,605 --> 00:02:32,400
+LIBRARIAN: Finally, AI understands academia.
+
+50
+00:02:33,000 --> 00:02:35,597
+NARRATOR: The questions or scoring might be the problem.
+
+51
+00:02:35,597 --> 00:02:37,421
+NARRATOR: That's a hypothesis.
+
+52
+00:02:37,421 --> 00:02:39,320
+NARRATOR: Decomposition hasn't been convicted.
+
+53
+00:02:41,343 --> 00:02:43,338
+LIBRARIAN: One question.
+
+54
+00:02:43,338 --> 00:02:45,917
+LIBRARIAN: How do you know when to stop screening?
+
+55
+00:02:48,400 --> 00:02:51,619
+NARRATOR: The evaluator consults the known benchmark labels.
+
+56
+00:02:51,619 --> 00:02:55,655
+NARRATOR: Those labels locate the ninety-five percent recall point after
+scoring.
+
+57
+00:02:55,655 --> 00:02:57,519
+NARRATOR: Jev never sees them.
+
+58
+00:02:57,519 --> 00:03:01,020
+NARRATOR: A retrospective result doesn't give a new review a validated
+stopping rule.
+
+59
+00:03:01,850 --> 00:03:03,851
+LIBRARIAN: Excellent crystal ball.
+
+60
+00:03:03,851 --> 00:03:07,259
+LIBRARIAN: Does it work before we know which studies are relevant?
+
+61
+00:03:07,259 --> 00:03:10,908
+LIBRARIAN: My protocol has a surprisingly strict policy on clairvoyance.
+
+62
+00:03:11,600 --> 00:03:15,987
+NARRATOR: Before trusting automated exclusions, prospectively validate
+thresholds, calibration,
+
+63
+00:03:15,987 --> 00:03:17,452
+NARRATOR: and stopping rules.
+
+64
+00:03:17,452 --> 00:03:19,349
+NARRATOR: Test other review types too.
+
+65
+00:03:19,349 --> 00:03:22,072
+NARRATOR: A probability needs checking, and eight DTA reviews aren't the
+whole
+
+66
+00:03:22,072 --> 00:03:23,420
+NARRATOR: evidence-synthesis universe.
+
+67
+00:03:24,117 --> 00:03:25,832
+PAPER: The methods are in the full text.
+
+68
+00:03:29,160 --> 00:03:30,955
+LIBRARIAN: Of course they are.
+
+69
+00:03:30,955 --> 00:03:33,781
+LIBRARIAN: Heaven forbid the abstract become useful.
+
+70
+00:03:38,000 --> 00:03:39,668
+NARRATOR: Jev works the queue.
+
+71
+00:03:39,668 --> 00:03:41,693
+NARRATOR: The librarian keeps the keys.
+
+72
+00:03:41,693 --> 00:03:43,112
+NARRATOR: Cheap decisions.
+
+73
+00:03:43,112 --> 00:03:44,220
+NARRATOR: Expensive questions.
